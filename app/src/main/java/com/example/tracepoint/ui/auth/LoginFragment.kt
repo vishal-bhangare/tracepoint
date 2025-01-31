@@ -40,7 +40,7 @@ class LoginFragment : Fragment() {
             viewModel.login(email, password)
         }
 
-        viewModel.authResult.observe(viewLifecycleOwner) { result ->
+        viewModel.authLoginResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Loading -> {
                     showLoading(true)

@@ -13,6 +13,12 @@ data class LoginRequest(
     val password: String
 )
 
+data class LoginResponse(
+    val status: Boolean = false,
+    val _id: String? = null
+)
+
+
 data class RegisterRequest(
     val name: String,
     val email: String,

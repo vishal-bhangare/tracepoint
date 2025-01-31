@@ -49,7 +49,7 @@ class ProfileViewModel : ViewModel() {
             try {
                 val userId = SharedPrefsManager.getUserId()
                 userId?.let { id ->
-                    val response = RetrofitClient.apiService.getLostPosts(id)
+                    val response = RetrofitClient.apiService.getUserLostPosts(id)
                     if (response.isSuccessful) {
                         _userLostItems.value = response.body()
                     }
@@ -65,7 +65,7 @@ class ProfileViewModel : ViewModel() {
             try {
                 val userId = SharedPrefsManager.getUserId()
                 userId?.let { id ->
-                    val response = RetrofitClient.apiService.getFoundPosts(id)
+                    val response = RetrofitClient.apiService.getUserFoundPosts(id)
                     if (response.isSuccessful) {
                         _userFoundItems.value = response.body()
                     }

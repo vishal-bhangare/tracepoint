@@ -1,5 +1,6 @@
 package com.example.tracepoint.ui.auth
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.tracepoint.api.RetrofitClient
 import com.example.tracepoint.models.AuthResponse
 import com.example.tracepoint.models.LoginRequest
+import com.example.tracepoint.models.LoginResponse
 import com.example.tracepoint.models.RegisterRequest
 import com.example.tracepoint.utils.Resource
 import com.example.tracepoint.utils.SharedPrefsManager
@@ -16,19 +18,33 @@ class AuthViewModel : ViewModel() {
     private val _authResult = MutableLiveData<Resource<AuthResponse>>()
     val authResult: LiveData<Resource<AuthResponse>> = _authResult
 
+    private val _authLoginResult = MutableLiveData<Resource<LoginResponse>>()
+    val authLoginResult: LiveData<Resource<LoginResponse>> = _authLoginResult
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
-            _authResult.value = Resource.Loading()
+            _authLoginResult.value = Resource.Loading()
             try {
                 val response = RetrofitClient.apiService.login(LoginRequest(email, password))
                 if (response.isSuccessful) {
-                    SharedPrefsManager.setLoggedIn(true)
-                    _authResult.value = Resource.Success(response.body()!!)
+                    response.body()?.let { loginResponse ->
+                        if (loginResponse.status) {
+                            loginResponse._id?.let { id ->
+                                SharedPrefsManager.saveUserId(id)
+                                val userId = SharedPrefsManager.getUserId()
+                                Log.d("TAG", "Current User ID: $userId")
+                            }
+                            SharedPrefsManager.setLoggedIn(true)
+                            _authLoginResult.value = Resource.Success(loginResponse)
+                        } else {
+                            _authLoginResult.value = Resource.Error("Invalid credentials")
+                        }
+                    }
                 } else {
-                    _authResult.value = Resource.Error("Login failed")
+                    _authLoginResult.value = Resource.Error("Login failed")
                 }
             } catch (e: Exception) {
-                _authResult.value = Resource.Error(e.message ?: "An error occurred")
+                _authLoginResult.value = Resource.Error(e.message ?: "An error occurred")
             }
         }
     }
