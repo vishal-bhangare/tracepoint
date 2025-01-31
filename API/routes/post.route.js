@@ -89,24 +89,6 @@ postRoute.route("/").post(
   }
 );
 
-// get info for post id
-postRoute.route("/:postid").get((req, res, next) => {
-  Post.findOne({ _id: req.params.postid })
-    .then((post) => {
-      if (post) {
-        res.status(200).json({
-          data: post
-        });
-      } else {
-        res.status(401).json({ result: "Post not found" });
-      }
-    })
-    .catch((err) => {
-      res.status(401).json({ result: "Post not found",errorMsg:err });
-    });
-})
-
-
 // Get all post
 postRoute.route("/").get((req, res, next) => {
   const query = {}
@@ -145,5 +127,23 @@ postRoute.route("/found").get((req, res, next) => {
       return next(err);
     });
 });
+
+// get info for post id
+postRoute.route("/:postid").get((req, res, next) => {
+  Post.findOne({ _id: req.params.postid })
+    .then((post) => {
+      if (post) {
+        res.status(200).json({
+          data: post
+        });
+      } else {
+        res.status(401).json({ result: "Post not found" });
+      }
+    })
+    .catch((err) => {
+      res.status(401).json({ result: "Post not found",errorMsg:err });
+    });
+})
+
 
 module.exports = postRoute;
