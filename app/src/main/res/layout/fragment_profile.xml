@@ -34,10 +34,19 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp" />
 
+            <!-- Added Logout Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLogout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Logout" />
+
         </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
+    <!-- Rest of your layout remains the same -->
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
         android:layout_width="match_parent"

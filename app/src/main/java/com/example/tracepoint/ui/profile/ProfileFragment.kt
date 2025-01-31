@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tracepoint.R
 import com.example.tracepoint.databinding.FragmentProfileBinding
 import com.example.tracepoint.ui.post.PostAdapter
 import com.google.android.material.tabs.TabLayout
@@ -35,6 +36,12 @@ class ProfileFragment : Fragment() {
         setupTabLayout()
         loadUserProfile()
         observeViewModel()
+
+        binding.btnLogout.setOnClickListener {
+            viewModel.logout()
+            findNavController().navigate(R.id.action_profileFragment_to_loginFragment)
+        }
+
     }
 
     private fun setupRecyclerViews() {

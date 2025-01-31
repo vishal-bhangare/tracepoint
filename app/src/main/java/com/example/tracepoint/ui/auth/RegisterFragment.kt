@@ -30,29 +30,40 @@ class RegisterFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Hide system bars
-        requireActivity().window.decorView.systemUiVisibility = (
-                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                        or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                )
+        binding.btnRegister.setOnClickListener {
+            val name = binding.etName.text.toString()
+            val email = binding.etEmail.text.toString()
+            val contact = binding.etContact.text.toString()
+            val password = binding.etPassword.text.toString()
+            val confirmPassword = binding.etConfirmPassword.text.toString()
+
+            viewModel.register(name, email, contact, password, confirmPassword)
+        }
 
         viewModel.authResult.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Loading -> {
-                    binding.loadingView.visibility = View.VISIBLE
+                    showLoading(true)
                 }
                 is Resource.Success -> {
-                    binding.loadingView.visibility = View.GONE
-                    findNavController().navigate(R.id.action_registerFragment_to_homeFragment)
+                    showLoading(false)
+                    Toast.makeText(context, "User registered successfully", Toast.LENGTH_SHORT).show()
+                    findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
                 }
                 is Resource.Error -> {
-                    binding.loadingView.visibility = View.GONE
+                    showLoading(false)
                     Toast.makeText(context, result.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
-
+    private fun showLoading(isLoading: Boolean) {
+        binding.apply {
+            btnRegister.text = if (isLoading) "" else "Register"
+            btnRegister.isEnabled = !isLoading
+            btnRegisterProgress.visibility = if (isLoading) View.VISIBLE else View.GONE
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
