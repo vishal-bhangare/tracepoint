@@ -133,9 +133,7 @@ postRoute.route("/:postid").get((req, res, next) => {
   Post.findOne({ _id: req.params.postid })
     .then((post) => {
       if (post) {
-        res.status(200).json({
-          data: post
-        });
+        res.status(200).json(post);
       } else {
         res.status(401).json({ result: "Post not found" });
       }
