@@ -1,6 +1,8 @@
 package com.example.tracepoint.ui.post
 
+import android.app.Application
 import android.net.Uri
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,9 +13,15 @@ import com.example.tracepoint.models.Location
 import com.example.tracepoint.models.Post
 import com.example.tracepoint.models.User
 import com.example.tracepoint.utils.Resource
+import com.example.tracepoint.utils.SharedPrefsManager
+import com.google.gson.Gson
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
-class PostViewModel : ViewModel() {
+class PostViewModel(application: Application) : AndroidViewModel(application) {
+    private val context = getApplication<Application>().applicationContext
     private val _postCreationResult = MutableLiveData<Resource<Post>>()
     val postCreationResult: LiveData<Resource<Post>> = _postCreationResult
 
@@ -23,22 +31,38 @@ class PostViewModel : ViewModel() {
     private val _authorDetails = MutableLiveData<User>()
     val authorDetails: LiveData<User> = _authorDetails
 
-    fun createPost(title: String, description: String, location: Location, type: Boolean, images: List<Uri>) {
+    fun createPost(title: String, description: String, author: String,location: Location, type: Boolean, images: List<Uri>) {
         viewModelScope.launch {
             _postCreationResult.value = Resource.Loading()
+
             try {
-                // TODO: Implement image upload logic
-                val imageUrls = uploadImages(images)
+                // Convert text fields to RequestBody
+                val titleBody = title.toRequestBody("text/plain".toMediaTypeOrNull())
+                val descriptionBody = description.toRequestBody("text/plain".toMediaTypeOrNull())
+                val authorBody = author.toRequestBody("text/plain".toMediaTypeOrNull())
+                val typeBody = type.toString().toRequestBody("text/plain".toMediaTypeOrNull())
+                val locationBody = Gson().toJson(location).toRequestBody("application/json".toMediaTypeOrNull())
+
+                // Convert images to MultipartBody.Parts
+                val imageParts = images.map { uri ->
+                    val stream = context.contentResolver.openInputStream(uri)
+                    val request = stream.use {
+                        it?.readBytes()?.toRequestBody("image/*".toMediaTypeOrNull())
+                    }
+                    MultipartBody.Part.createFormData(
+                        "images",
+                        "image_${System.currentTimeMillis()}.jpg",
+                        request!!
+                    )
+                }
 
                 val response = RetrofitClient.apiService.createPost(
-                    CreatePostRequest(
-                        title = title,
-                        description = description,
-                        location = location,
-                        type = type,
-                        author = getCurrentUserId(),
-                        images = imageUrls
-                    )
+                    titleBody,
+                    descriptionBody,
+                    authorBody,
+                    typeBody,
+                    locationBody,
+                    imageParts
                 )
 
                 if (response.isSuccessful) {
@@ -51,6 +75,7 @@ class PostViewModel : ViewModel() {
             }
         }
     }
+
 
     fun getPostDetails(postId: String) {
         viewModelScope.launch {
@@ -83,8 +108,5 @@ class PostViewModel : ViewModel() {
         return emptyList()
     }
 
-    private fun getCurrentUserId(): String {
-        // TODO: Implement get current user logic
-        return ""
-    }
+
 }

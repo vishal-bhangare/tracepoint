@@ -60,6 +60,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Select Location" />
+        <!-- Add this after your select location button -->
+        <TextView
+            android:id="@+id/tvSelectedLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black"
+            android:visibility="gone"
+            android:textAlignment="center"
+            android:text="Selected Location: Lat: 0.0, Long: 0.0" />
+
 
         <Button
             android:id="@+id/btnSubmit"

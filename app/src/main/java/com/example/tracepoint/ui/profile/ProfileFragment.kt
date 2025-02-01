@@ -10,7 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tracepoint.R
 import com.example.tracepoint.databinding.FragmentProfileBinding
-import com.example.tracepoint.ui.post.PostAdapter
+import com.example.tracepoint.ui.postDetails.PostAdapter
 import com.google.android.material.tabs.TabLayout
 
 class ProfileFragment : Fragment() {

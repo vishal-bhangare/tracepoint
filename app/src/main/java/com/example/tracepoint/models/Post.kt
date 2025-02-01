@@ -1,7 +1,7 @@
 package com.example.tracepoint.models
 
 data class Post(
-    val id: String,
+    val _id: String,
     val title: String,
     val description: String,
     val location: Location,
@@ -20,6 +20,6 @@ data class CreatePostRequest(
     val description: String,
     val location: Location,
     val type: Boolean,
-    val author: String,
+    val author: String?,
     val images: List<String>
 )

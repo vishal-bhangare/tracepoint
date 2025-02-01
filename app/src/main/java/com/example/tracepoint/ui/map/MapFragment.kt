@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.example.tracepoint.R
 import com.example.tracepoint.databinding.FragmentMapBinding
@@ -51,13 +52,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         binding.btnConfirmLocation.setOnClickListener {
             selectedLocation?.let { location ->
-                findNavController().navigate(
-                    R.id.action_mapFragment_to_createPostFragment,
-                    Bundle().apply {
-                        putFloat("latitude", location.latitude.toFloat())
-                        putFloat("longitude", location.longitude.toFloat())
-                    }
-                )
+                val bundle = Bundle().apply {
+                    putDouble("latitude", location.latitude)
+                    putDouble("longitude", location.longitude)
+                }
+                setFragmentResult("location_request", bundle)
+                findNavController().navigateUp()
             }
         }
     }

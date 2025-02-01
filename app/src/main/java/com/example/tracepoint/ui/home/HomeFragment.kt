@@ -10,10 +10,8 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tracepoint.R
 import com.example.tracepoint.databinding.FragmentHomeBinding
-import com.example.tracepoint.ui.post.PostAdapter
+import com.example.tracepoint.ui.postDetails.PostAdapter
 import com.google.android.material.tabs.TabLayout
-import com.example.tracepoint.models.Post
-import com.example.tracepoint.utils.Resource
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null

@@ -53,7 +53,7 @@
 
     <fragment
         android:id="@+id/postDetailFragment"
-        android:name="com.example.tracepoint.ui.post.PostDetailFragment"
+        android:name="com.example.tracepoint.ui.postDetails.PostDetailFragment"
         android:label="Post Detail">
         <argument
             android:name="postId"

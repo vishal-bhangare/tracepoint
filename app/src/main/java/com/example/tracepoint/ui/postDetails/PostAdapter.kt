@@ -1,4 +1,4 @@
-package com.example.tracepoint.ui.post
+package com.example.tracepoint.ui.postDetails
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -44,7 +44,7 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
                     it.findNavController().navigate(
                         R.id.action_homeFragment_to_postDetailFragment,
                         Bundle().apply {
-                            putString("postId", post.id)
+                            putString("postId", post._id)
                         }
                     )
                 }
@@ -55,7 +55,7 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
 
     class PostDiffCallback : DiffUtil.ItemCallback<Post>() {
         override fun areItemsTheSame(oldItem: Post, newItem: Post): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem._id == newItem._id
         }
 
         override fun areContentsTheSame(oldItem: Post, newItem: Post): Boolean {

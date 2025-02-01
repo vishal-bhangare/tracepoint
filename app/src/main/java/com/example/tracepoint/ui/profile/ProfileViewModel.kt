@@ -1,5 +1,6 @@
 package com.example.tracepoint.ui.profile
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -33,6 +34,8 @@ class ProfileViewModel : ViewModel() {
                     val response = RetrofitClient.apiService.getUser(id)
                     if (response.isSuccessful) {
                         _userProfile.value = response.body()
+                        Log.e("User", "Raw Response: ${response.body()}")
+
                         loadUserPosts(id)
                     }
                 }
