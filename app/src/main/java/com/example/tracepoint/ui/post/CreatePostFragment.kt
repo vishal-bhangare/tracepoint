@@ -58,7 +58,7 @@ class CreatePostFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        Toast.makeText(context, "Select Location First!!", Toast.LENGTH_LONG).show()
         setFragmentResultListener("location_request") { _, bundle ->
             val latitude = bundle.getDouble("latitude")
             val longitude = bundle.getDouble("longitude")

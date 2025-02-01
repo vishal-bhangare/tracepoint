@@ -40,14 +40,21 @@ class PostAdapter : ListAdapter<Post, PostAdapter.PostViewHolder>(PostDiffCallba
                 }
 
                 root.setOnClickListener {
-                    // Using standard navigation with the action ID
-                    it.findNavController().navigate(
-                        R.id.action_homeFragment_to_postDetailFragment,
-                        Bundle().apply {
-                            putString("postId", post._id)
-                        }
-                    )
+                    val navController = it.findNavController()
+                    val currentDestination = navController.currentDestination?.id
+
+                    when (currentDestination) {
+                        R.id.homeFragment -> navController.navigate(
+                            R.id.action_homeFragment_to_postDetailFragment,
+                            Bundle().apply { putString("postId", post._id) }
+                        )
+                        R.id.profileFragment -> navController.navigate(
+                            R.id.action_profileFragment_to_postDetailFragment,
+                            Bundle().apply { putString("postId", post._id) }
+                        )
+                    }
                 }
+
             }
         }
 

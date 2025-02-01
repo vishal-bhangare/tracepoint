@@ -1,4 +1,5 @@
 package com.example.tracepoint.ui.postDetails
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -37,7 +38,7 @@ class PostDetailViewModel : ViewModel() {
             _postDetails.value = Resource.Loading()
             try {
                 val response = RetrofitClient.apiService.getPost(postId)
-                if (response.isSuccessful) {
+               if (response.isSuccessful) {
                     response.body()?.let { post ->
                         _postDetails.value = Resource.Success(post)
                     }

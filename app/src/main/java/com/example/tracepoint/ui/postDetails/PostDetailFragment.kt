@@ -1,12 +1,14 @@
 package com.example.tracepoint.ui.postDetails
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.tracepoint.R
@@ -31,12 +33,23 @@ class PostDetailFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
         setupMap()
         observePostDetails()
         setupContactButton()
-
-        // Load post details using ID
         viewModel.loadPostDetails(args.postId)
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentPostDetailBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     private fun setupMap() {
@@ -51,21 +64,19 @@ class PostDetailFragment : Fragment() {
         viewModel.postDetails.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Success -> {
-                    binding.apply {
-                        progressBar.visibility = View.GONE
-                        tvTitle.text = result.data?.title
-                        tvDescription.text = result.data?.description
-                        tvType.text = if (result.data?.type == true) "Found Item" else "Lost Item"
-
-                        // Load first image if available
-                        if (result.data?.images?.isNotEmpty() == true) {
-                            Glide.with(requireContext())
-                                .load(result.data.images[0])
-                                .into(ivImage)
+                    result.data?.let { post ->
+                        binding.apply {
+                            progressBar.visibility = View.GONE
+                            tvTitle.text = post.title
+                            tvDescription.text = post.description
+                            tvType.text = if (post.type) "Found Item" else "Lost Item"
+                            if (post.images.isNotEmpty()) {
+                                Glide.with(requireContext())
+                                    .load(post.images[0])
+                                    .into(ivImage)
+                            }
+                            showLocationOnMap(post)
                         }
-
-                        // Show location on map
-                        result.data?.let { showLocationOnMap(it) }
                     }
                 }
                 is Resource.Loading -> {
@@ -81,40 +92,52 @@ class PostDetailFragment : Fragment() {
 
     private fun showLocationOnMap(post: Post) {
         googleMap?.let { map ->
-            val location = LatLng(
-                post.location.coordinates[1],
-                post.location.coordinates[0]
-            )
-            map.clear()
-            map.addMarker(MarkerOptions().position(location))
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+            // Check if coordinates exist
+            if (post.location.coordinates.size >= 2) {
+                val location = LatLng(
+                    post.location.coordinates[1],
+                    post.location.coordinates[0]
+                )
+                map.clear()
+                map.addMarker(MarkerOptions().position(location))
+                map.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+            } else {
+                Log.d("Map", "Invalid coordinates: ${post.location.coordinates}")
+            }
         }
     }
-
     private fun setupContactButton() {
-        binding.btnContact.setOnClickListener {
+        binding.btnContact.setOnClickListener { view ->
+            Toast.makeText(context, "Loading contact details...", Toast.LENGTH_SHORT).show()
+
             viewModel.postDetails.value?.let { result ->
-                if (result is Resource.Success) {
-                    result.data?.author?.let { it1 -> viewModel.loadUserDetails(it1) }
+                when (result) {
+                    is Resource.Success -> {
+                        result.data?.let { viewModel.loadUserDetails(it.author) }
+                    }
+                    else -> {
+                        Log.d("Contact", "Post details not available")
+                    }
                 }
             }
         }
 
-        // Observe user details
         viewModel.userDetails.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is Resource.Success -> {
                     result.data?.let { showContactDialog(it) }
                 }
                 is Resource.Error -> {
-                    Toast.makeText(context, "Failed to load contact details", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Failed to load contact details: ${result.message}", Toast.LENGTH_SHORT).show()
                 }
                 is Resource.Loading -> {
-                    // Handle loading state if needed
+                    Log.d("Contact", "Loading user details...")
                 }
             }
         }
     }
+
+
 
     private fun showContactDialog(user: User) {
         MaterialAlertDialogBuilder(requireContext())

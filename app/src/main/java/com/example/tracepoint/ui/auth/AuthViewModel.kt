@@ -31,7 +31,6 @@ class AuthViewModel : ViewModel() {
                         if (loginResponse.status) {
                             loginResponse._id?.let { id ->
                                 SharedPrefsManager.saveUserId(id)
-                                val userId = SharedPrefsManager.getUserId()
                             }
                             SharedPrefsManager.setLoggedIn(true)
                             _authLoginResult.value = Resource.Success(loginResponse)
