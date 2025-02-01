@@ -7,9 +7,7 @@ userRoute.route("/:user").get((req, res, next) => {
   User.findOne({ _id: req.params.user })
     .then((user) => {
       if (user) {
-        res.status(200).json({
-          data: user
-        });
+        res.status(200).json(user);
       } else {
         res.status(401).json({ result: "User not found" });
       }
